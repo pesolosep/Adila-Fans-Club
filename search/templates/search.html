@@ -1,0 +1,6 @@
+<main class="pt-20 h-screen flex items-center justify-center">
+  <form class="flex flex-col items-center space-y-4" method="post" action="{% url 'search:search' %}">
+    {% csrf_token %}
+    <input class="w-[64rem] h-16 px-6 border-2 border-gray-400 rounded-full text-2xl font-body" name="query" type="text" placeholder="Search Our Database...">
+  </form>
+</main>

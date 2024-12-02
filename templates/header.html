@@ -1,0 +1,14 @@
+{% load static %}
+
+<header class="fixed flex z-10 w-screen bg-dark-bg-2 duration-200 justify-start">
+  <nav class="h-20">
+    <a href="{% url 'landingpage:landingpage' %}" class="flex items-center space-x-3 h-full w-full">
+      <div>
+        <img class="pl-6 h-10" src="{% static 'img/logo.png' %}">
+      </div>
+      <div class="font-body-bold text-4xl text-white">
+        YouTrend
+      </div>
+    </a>
+  </nav>
+</header>

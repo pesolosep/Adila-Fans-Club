@@ -1,0 +1,16 @@
+{% load static %}
+
+<main class="bg-white flex flex-col justify-center items-center w-screen h-screen space-y-24">
+  <div class="flex items-center justify-center w-screen space-x-16">
+    <div>
+      <img class="h-72" src="{% static 'img/logo.png' %}">
+    </div>
+    <div class="font-body-bold text-14xl text-dark-bg-1">
+      YouTrend
+    </div>
+  </div>
+  <form class="flex flex-col items-center space-y-4" method="post" action="{% url 'search:search' %}">
+    {% csrf_token %}
+    <input class="w-[64rem] h-16 px-6 border-2 border-gray-400 rounded-full text-2xl font-body" name="query" type="text" placeholder="Search Our Database...">
+  </form>
+</main>

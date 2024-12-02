@@ -30,8 +30,8 @@ SECRET_KEY = os.environ['SECRET_KEY']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG =  os.environ['DEBUG'] == "True"
 
-ALLOWED_HOSTS = []
 
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'django']
 
 # Application definition
 
@@ -41,17 +41,36 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    "whitenoise.runserver_nostatic",
     'django.contrib.staticfiles',
+
+    'tailwind',
+    'theme',
+    'django_browser_reload',
+    'svg',
+    "django_htmx",
+
+    'landingpage',
+    'video',
+    'search',
+    'channel',
 ]
+TAILWIND_APP_NAME = 'theme'
+
+
+INTERNAL_IPS = ['127.0.0.1', '0.0.0.0']
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'django_htmx.middleware.HtmxMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_browser_reload.middleware.BrowserReloadMiddleware',
 ]
 
 ROOT_URLCONF = 'youtrend.urls'
@@ -59,7 +78,7 @@ ROOT_URLCONF = 'youtrend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -83,6 +102,12 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
+}
+
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+    },
 }
 
 
@@ -120,7 +145,16 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = '/staticfiles/'
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+
+SVG_DIRS = [
+    BASE_DIR / "static/icons",
+    BASE_DIR / "static/decor"
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
