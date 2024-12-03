@@ -26,6 +26,8 @@ if os.path.isfile(dotenv_file):
     dotenv.load_dotenv(dotenv_file)
 
 SECRET_KEY = os.environ['SECRET_KEY']
+DB_UNAME = os.environ['DB_UNAME']
+DB_PASS = os.environ['DB_PASS']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG =  os.environ['DEBUG'] == "True"

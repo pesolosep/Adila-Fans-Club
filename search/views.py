@@ -1,66 +1,80 @@
 from SPARQLWrapper import SPARQLWrapper, JSON
+from django.http import JsonResponse
 from fuzzywuzzy import fuzz
-from fuzzywuzzy import process
 from django.shortcuts import render
-from pprint import pprint as print
+from .query import *
+from django.conf import settings
 
-PREFIXES = """
-    prefix :      <http://adilafanclub.com/base/>
-    prefix owl:   <http://www.w3.org/2002/07/owl#>
-    prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#>
-    prefix vcard: <http://www.w3.org/2006/vcard/ns#>
-    prefix wd:    <http://www.wikidata.org/entity/>
-    prefix xsd:   <http://www.w3.org/2001/XMLSchema#>
-"""
-OWL = "http://www.w3.org/2002/07/owl#"
-HOST = "http://127.0.0.1:7200/"
-
-sparql = SPARQLWrapper(f"{HOST}repositories/local_tk")
-
+sparql = SPARQLWrapper(REPO)
 
 # Create your views here.
 def search(request):
-    response = {}
+    context = {}
 
     if request.method == 'POST':
         query = request.POST.get('query').strip()
-        sparql.setCredentials("admin", "root")
-        sparql.setQuery(f"""
-            {PREFIXES}
+        fuzzy_results = exec_query(FUZZY_QUERY)
+        prefixed = []
+        infixed = []
+        similars = []
 
-            SELECT ?id ?p ?o
-            WHERE{{
-                ?id rdfs:label :{query};
-                    ?p ?o .
-            }}
-            """
-        )
+        for data in fuzzy_results:
+            cond = data['label']['value'].lower().startswith(query.lower())
+            if cond:
+                prefixed.append(data)
 
-        sparql.setReturnFormat(JSON)
-        results = sparql.query().convert()
-        response['data'] = results["results"]["bindings"]
+            cond2 = query.lower() in data['label']['value'].lower()
+            if not cond and cond2:
+                infixed.append(data)
 
-    if not response["data"] and request.method == 'POST':
-        sparql.setQuery(f"""
-            {PREFIXES}
+            ratio = fuzz.ratio(query.lower(), data['label']['value'].lower())
+            if not cond and not cond2 and ratio >= 80:
+                similars.append((data, ratio))
 
-            SELECT ?id ?label
-            WHERE{{
-                ?id rdfs:label ?label;
-            }}
-            """
-        )
-        fuzzy_results = sparql.query().convert()
-        fuzzy_data = fuzzy_results["results"]["bindings"]
-        similar_ids = []
+            similars = sorted(similars, key=lambda x: x[1], reverse=True)
 
-        for data in fuzzy_data:
-            ratio = fuzz.ratio(query, data['label']['value'].removeprefix(OWL))
+        similars = [x[0] for x in similars]
+        context["data"] = prefixed + infixed + similars
 
-            if ratio >= 50:
-                similar_ids.append(data['id']['value'])
-
-    context = {}
     context["content"] = "search.html"
+
     return render(request, 'base.html', context)
+
+def exec_query(query: str) -> dict:
+    sparql.setCredentials(settings.DB_UNAME, settings.DB_PASS)
+    sparql.setQuery(query)
+
+    sparql.setReturnFormat(JSON)
+    results = sparql.query().convert()
+
+    return results["results"]["bindings"]
+
+def autocomplete(request):
+    assert request.method == 'POST'
+
+    if request.method == 'POST':
+        query = eval(request.body).get('query', '').strip()
+        print(query)
+        fuzzy_results = exec_query(FUZZY_QUERY)
+        prefixed = []
+        infixed = []
+        similars = []
+
+        for data in fuzzy_results:
+            cond = data['label']['value'].lower().startswith(query.lower())
+            if cond:
+                prefixed.append(data)
+
+            cond2 = query.lower() in data['label']['value'].lower()
+            if not cond and cond2:
+                infixed.append(data)
+
+            ratio = fuzz.ratio(query.lower(), data['label']['value'].lower())
+            if not cond and not cond2 and ratio >= 80:
+                similars.append((data, ratio))
+
+            similars = sorted(similars, key=lambda x: x[1], reverse=True)
+
+        similars = [x[0] for x in similars]
+
+    return JsonResponse((prefixed + infixed + similars)[:50], safe=False)

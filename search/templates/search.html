@@ -1,6 +1,48 @@
-<main class="pt-20 h-screen flex items-center justify-center">
-  <form class="flex flex-col items-center space-y-4" method="post" action="{% url 'search:search' %}">
+<main class="pt-32 h-screen flex flex-col items-center justify-center space-y-6">
+  <form class="autocomplete flex flex-col items-center space-y-4" method="post"
+    action="{% url 'search:search' %}">
     {% csrf_token %}
-    <input class="w-[64rem] h-16 px-6 border-2 border-gray-400 rounded-full text-2xl font-body" name="query" type="text" placeholder="Search Our Database...">
+    <input class="textinput w-[64rem] h-16 px-6 border-2 border-gray-400 rounded-full text-2xl font-body" name="query" type="text"
+      placeholder="Search Our Database...">
   </form>
+  <div class="query-results pt-16 w-3/5 grid grid-cols-3 overflow-scroll text-2xl font-body bg-green-500 h-screen">
+  </div>
+  <script>
+    inputField = document.querySelector('.autocomplete');
+    inputField.addEventListener('input', change);
+
+    async function change() {
+      const response = await fetch("{% url 'search:autocomplete' %}", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': '{{ csrf_token }}'
+        },
+        mode: 'same-origin',
+        body: JSON.stringify({
+          'query': "" + document.querySelector('.textinput').value,
+        })
+      });
+
+      data = await response.json();
+
+      results = document.querySelector('.query-results');
+      inner = '';
+
+      data.forEach(element => {
+        inner += `
+            <div>${element['id']['value']}</div>
+            <div>${element['label']['value']}</div>
+            <div>${element['type']['value']}</div>
+        `;
+      });
+
+      if (document.querySelector('.textinput').value != '')
+        results.innerHTML = inner;
+      else
+        results.innerHTML = '';
+
+    }
+
+  </script>
 </main>

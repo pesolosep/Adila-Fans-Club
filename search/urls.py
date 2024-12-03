@@ -5,4 +5,5 @@ app_name = 'search'
 
 urlpatterns = [
     path('', views.search, name='search'),
+    path('autocomplete/', views.autocomplete, name='autocomplete'),
 ]
