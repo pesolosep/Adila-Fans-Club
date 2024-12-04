@@ -1,17 +1,17 @@
 from urllib.parse import unquote
 
 
-HOST = "http://127.0.0.1:7200/"
+HOST = "http://34.173.52.244:7200/"
 
 BASE = "http://adilafanclub.com/"
 OWL = "http://www.w3.org/2002/07/owl#"
 RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 RDFS = "http://www.w3.org/2000/01/rdf-schema#"
 NS1 = "http://xmlns.com/foaf/0.1/"
-V = "http://adilafanclub.com/vocab#"
+V = "http://adilafanclub.com/base/vocab#"
 XSD = "http://www.w3.org/2001/XMLSchema#"
 
-REPO_ID = "local_tk"
+REPO_ID = "PakAdilaFanClub"
 REPO = f"{HOST}repositories/{REPO_ID}"
 
 PREFIXES = f"""
@@ -60,13 +60,13 @@ QUERY_CHANNEL_CATEGORY = f"""
 QUERY_VIDEO = f"""
     {PREFIXES}
 
-    SELECT ?id ?title ?thumbs ?desc (GROUP_CONCAT(DISTINCT ?tag; SEPARATOR=", ") AS ?tags) ?colledtedDate ?country ?dailyRank ?viewCount ?likeCount ?commentCount WHERE {{
-        ?id a :video;
-        v:hasInfoAtTime [
-            v:hasTitle LABEL;
+    SELECT ?title ?thumbs ?desc (GROUP_CONCAT(DISTINCT ?tag; SEPARATOR=", ") AS ?tags) ?colledtedDate ?country ?dailyRank ?viewCount ?likeCount ?commentCount WHERE {{
+        LABEL a :video;
+        :hasInfoAtTime [
+            v:hasTitle ?title;
             v:hasThumbnail ?thumbs;
             v:hasDescription ?desc;
-            v:hasTags  ?tag
+            v:hasTags ?tag
         ];
         v:trendingInfo [
             v:collectedWhen ?colledtedDate;
@@ -77,7 +77,7 @@ QUERY_VIDEO = f"""
             v:commentCount ?commentCount
         ] .
     }}
-    GROUP BY ?p ?title ?thumbs ?desc ?colledtedDate ?country ?dailyRank ?viewCount ?likeCount ?commentCount
+    GROUP BY ?title ?thumbs ?desc ?colledtedDate ?country ?dailyRank ?viewCount ?likeCount ?commentCount
 """
 
 FUZZY_QUERY = f"""
@@ -87,15 +87,16 @@ FUZZY_QUERY = f"""
     WHERE {{
     	{{
             ?id	a :video;
-                v:hasInfoAtTime [v:hasTitle ?label]
+                :hasInfoAtTime [v:hasTitle ?label]
             BIND("video" AS ?type)
     	}} UNION {{
         	?id a :channel;
-        		rdfs:label ?label .
+        		v:fixedName ?label .
             BIND("channel" AS ?type)
     	}}
     }}
 """
+print(FUZZY_QUERY)
 
 def fix_encoding(data: str) -> str:
     data = unquote(data).encode()

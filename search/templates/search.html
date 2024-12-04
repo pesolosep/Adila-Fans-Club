@@ -1,11 +1,22 @@
-<main class="pt-32 h-screen flex flex-col items-center justify-center space-y-6">
-  <form class="autocomplete flex flex-col items-center space-y-4" method="post"
-    action="{% url 'search:search' %}">
+<main class="pt-28 h-screen flex flex-col items-center justify-center space-y-6">
+  <form class="autocomplete flex flex-col items-center space-y-4 mb-6" method="post" action="{% url 'search:search' %}">
     {% csrf_token %}
-    <input class="textinput w-[64rem] h-16 px-6 border-2 border-gray-400 rounded-full text-2xl font-body" name="query" type="text"
-      placeholder="Search Our Database...">
+    <input class="textinput w-[64rem] h-16 px-6 border-2 border-gray-400 rounded-full text-2xl font-body" name="query"
+      type="text" placeholder="Search Our Database...">
   </form>
-  <div class="query-results pt-16 w-3/5 grid grid-cols-3 overflow-scroll text-2xl font-body bg-green-500 h-screen">
+  <div class="pt-8 w-3/5 grid grid-cols-3 text-2xl overflow-hidden border-t-2 border-x-2 rounded-t-xl flex-1">
+    <div class="font-body-bold flex justify-center items-center self-start border-b-2 pb-8">
+      Unique ID
+    </div>
+    <div class="font-body-bold flex justify-center items-center self-start border-b-2 pb-8">
+      Title/Name
+    </div>
+    <div class="font-body-bold flex justify-center items-center self-start border-b-2 pb-8">
+      Type
+    </div>
+    <div class="query-results grid grid-cols-3 col-span-3 overflow-scroll h-min text-2xl font-body">
+
+    </div>
   </div>
   <script>
     inputField = document.querySelector('.autocomplete');
@@ -27,13 +38,26 @@
       data = await response.json();
 
       results = document.querySelector('.query-results');
-      inner = '';
+      inner =  "";
+      i = 0
 
       data.forEach(element => {
+        i++
+        if (i % 2 == 0) {
+          color = 'bg-gray-200';
+        } else {
+          color = '';
+        }
         inner += `
-            <div>${element['id']['value']}</div>
-            <div>${element['label']['value']}</div>
-            <div>${element['type']['value']}</div>
+            <div class="flex justify-center items-center ${color}">
+              ${element['id']['value']}
+            </div>
+            <div class="text-ellipsis text-nowrap overflow-hidden ${color}">
+              ${element['label']['value']}
+            </div>
+            <div class="flex justify-center items-center ${color}">
+              ${element['type']['value']}
+            </div>
         `;
       });
 

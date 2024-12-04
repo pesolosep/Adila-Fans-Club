@@ -7,7 +7,6 @@ from django.conf import settings
 
 sparql = SPARQLWrapper(REPO)
 
-# Create your views here.
 def search(request):
     context = {}
 
@@ -54,13 +53,13 @@ def autocomplete(request):
 
     if request.method == 'POST':
         query = eval(request.body).get('query', '').strip()
-        print(query)
         fuzzy_results = exec_query(FUZZY_QUERY)
         prefixed = []
         infixed = []
         similars = []
 
         for data in fuzzy_results:
+            data['id']['value'] = data['id']['value'].removeprefix(BASE)
             cond = data['label']['value'].lower().startswith(query.lower())
             if cond:
                 prefixed.append(data)
