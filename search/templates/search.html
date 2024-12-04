@@ -2,9 +2,10 @@
   <form class="autocomplete flex flex-col items-center space-y-4 mb-6" method="post" action="{% url 'search:search' %}">
     {% csrf_token %}
     <input class="textinput w-[64rem] h-16 px-6 border-2 border-gray-400 rounded-full text-2xl font-body" name="query"
-      type="text" placeholder="Search Our Database...">
+      type="text" placeholder="Search Our Database..." value="{{ query }}">
   </form>
-  <div class="pt-8 w-3/5 grid grid-cols-3 text-2xl overflow-hidden border-t-2 border-x-2 rounded-t-xl flex-1">
+  <div
+    class="pt-8 w-4/5 grid grid-cols-[30%_auto_10%] text-2xl overflow-hidden border-t-2 border-x-2 rounded-t-xl flex-1 content-start">
     <div class="font-body-bold flex justify-center items-center self-start border-b-2 pb-8">
       Unique ID
     </div>
@@ -14,7 +15,7 @@
     <div class="font-body-bold flex justify-center items-center self-start border-b-2 pb-8">
       Type
     </div>
-    <div class="query-results grid grid-cols-3 col-span-3 overflow-scroll h-min text-2xl font-body">
+    <div class="query-results grid grid-cols-[30%_auto_10%] col-span-3 overflow-scroll text-2xl font-body">
 
     </div>
   </div>
@@ -23,50 +24,56 @@
     inputField.addEventListener('input', change);
 
     async function change() {
-      const response = await fetch("{% url 'search:autocomplete' %}", {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': '{{ csrf_token }}'
-        },
-        mode: 'same-origin',
-        body: JSON.stringify({
-          'query': "" + document.querySelector('.textinput').value,
-        })
-      });
+      if (document.querySelector('.textinput').value != '') {
+        const response = await fetch("{% url 'search:autocomplete' %}", {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+          },
+          mode: 'same-origin',
+          body: JSON.stringify({
+            'query': "" + document.querySelector('.textinput').value,
+          })
+        });
 
-      data = await response.json();
+        data = await response.json();
 
-      results = document.querySelector('.query-results');
-      inner =  "";
-      i = 0
+        results = document.querySelector('.query-results');
+        inner = "";
+        i = 0
 
-      data.forEach(element => {
-        i++
-        if (i % 2 == 0) {
-          color = 'bg-gray-200';
-        } else {
-          color = '';
-        }
-        inner += `
-            <div class="flex justify-center items-center ${color}">
-              ${element['id']['value']}
-            </div>
-            <div class="text-ellipsis text-nowrap overflow-hidden ${color}">
-              ${element['label']['value']}
-            </div>
-            <div class="flex justify-center items-center ${color}">
-              ${element['type']['value']}
-            </div>
-        `;
-      });
+        data.forEach(element => {
+          i++
+          if (i % 2 == 0) {
+            color = "bg-gray-200";
+          } else {
+            color = "";
+          }
+          id = element['id']['value'];
+          type = element['type']['value'];
+          inner += `
+              <a class="grid grid-cols-[30%_auto_10%] col-span-3" href="/${type}/${id}">
+                <div class="flex self-start justify-center items-center py-4 ${color}">
+                  ${id}
+                </div>
+                <div class="text-ellipsis self-start items-center text-nowrap overflow-hidden py-4 ${color}">
+                  ${element['label']['value']}
+                </div>
+                <div class="flex self-start justify-center items-center items-start py-4 ${color}">
+                  ${type}
+                </div>
+              </a>
+          `;
+        });
 
-      if (document.querySelector('.textinput').value != '')
         results.innerHTML = inner;
-      else
+      } else {
         results.innerHTML = '';
+      }
 
     }
 
+    change();
   </script>
 </main>

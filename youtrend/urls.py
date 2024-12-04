@@ -19,5 +19,7 @@ from django.urls import include, path
 urlpatterns = [
     path('__reload__', include('django_browser_reload.urls')),
     path('', include('landingpage.urls')),
-    path('search/', include('search.urls'))
+    path('search/', include('search.urls')),
+    path('video/', include('video.urls')),
+    path('channel/', include('channel.urls'))
 ]

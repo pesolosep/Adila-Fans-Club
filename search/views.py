@@ -12,31 +12,9 @@ def search(request):
 
     if request.method == 'POST':
         query = request.POST.get('query').strip()
-        fuzzy_results = exec_query(FUZZY_QUERY)
-        prefixed = []
-        infixed = []
-        similars = []
-
-        for data in fuzzy_results:
-            cond = data['label']['value'].lower().startswith(query.lower())
-            if cond:
-                prefixed.append(data)
-
-            cond2 = query.lower() in data['label']['value'].lower()
-            if not cond and cond2:
-                infixed.append(data)
-
-            ratio = fuzz.ratio(query.lower(), data['label']['value'].lower())
-            if not cond and not cond2 and ratio >= 80:
-                similars.append((data, ratio))
-
-            similars = sorted(similars, key=lambda x: x[1], reverse=True)
-
-        similars = [x[0] for x in similars]
-        context["data"] = prefixed + infixed + similars
+        context["query"] = query
 
     context["content"] = "search.html"
-
     return render(request, 'base.html', context)
 
 def exec_query(query: str) -> dict:
@@ -53,27 +31,17 @@ def autocomplete(request):
 
     if request.method == 'POST':
         query = eval(request.body).get('query', '').strip()
-        fuzzy_results = exec_query(FUZZY_QUERY)
-        prefixed = []
-        infixed = []
+        fuzzy_results = exec_query(FUZZY_QUERY.replace('LABEL', query))
         similars = []
 
-        for data in fuzzy_results:
-            data['id']['value'] = data['id']['value'].removeprefix(BASE)
-            cond = data['label']['value'].lower().startswith(query.lower())
-            if cond:
-                prefixed.append(data)
-
-            cond2 = query.lower() in data['label']['value'].lower()
-            if not cond and cond2:
-                infixed.append(data)
-
-            ratio = fuzz.ratio(query.lower(), data['label']['value'].lower())
-            if not cond and not cond2 and ratio >= 80:
+        if len(fuzzy_results) < 1000:
+            for data in fuzzy_results:
+                ratio = fuzz.ratio(query.lower(), data['label']['value'].lower())
                 similars.append((data, ratio))
 
             similars = sorted(similars, key=lambda x: x[1], reverse=True)
+            similars = [x[0] for x in similars]
+        else:
+            similars = fuzzy_results
 
-        similars = [x[0] for x in similars]
-
-    return JsonResponse((prefixed + infixed + similars)[:50], safe=False)
+    return JsonResponse(similars, safe=False)

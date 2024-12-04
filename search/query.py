@@ -27,14 +27,15 @@ PREFIXES = f"""
 QUERY_CHANNEL = f"""
     {PREFIXES}
 
-    SELECT ?id ?yearCreated ?subscribers ?rank ?videoViews ?videoCount ?category
+    SELECT ?name ?yearCreated ?subscribers ?rank ?videoViews ?videoCount ?category
     WHERE {{
-        ?id rdfs:label LABEL;
+        :LABEL a :channel;
             v:createdAt ?yearCreated;
             v:hasSubscribers ?subscribers;
             v:trendingRank ?rank;
             v:videoViews ?videoViews;
             v:videoCount ?videoCount;
+    		v:fixedName ?name;
             v:hasCategory ?category .
     }}
 """
@@ -86,17 +87,19 @@ FUZZY_QUERY = f"""
     SELECT DISTINCT ?id ?label ?type
     WHERE {{
     	{{
-            ?id	a :video;
-                :hasInfoAtTime [v:hasTitle ?label]
+            ?uri a :video;
+                 :hasInfoAtTime [v:hasTitle ?label]
             BIND("video" AS ?type)
     	}} UNION {{
-        	?id a :channel;
+        	?uri a :channel;
         		v:fixedName ?label .
             BIND("channel" AS ?type)
     	}}
-    }}
+
+        BIND(STRAFTER(STR(?uri), STR(:)) AS ?id)
+        FILTER(STRSTARTS(LCASE(?label), LCASE("LABEL")) || CONTAINS(LCASE(?label), LCASE("LABEL")))
+    }} LIMIT 1000
 """
-print(FUZZY_QUERY)
 
 def fix_encoding(data: str) -> str:
     data = unquote(data).encode()
