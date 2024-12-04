@@ -36,7 +36,9 @@ QUERY_CHANNEL = f"""
             v:videoViews ?videoViews;
             v:videoCount ?videoCount;
     		v:fixedName ?name;
-            v:hasCategory ?category .
+            v:hasCategory ?categoryuri .
+
+            BIND(STRAFTER(STR(?categoryuri), STR(:)) AS ?category)
     }}
 """
 
