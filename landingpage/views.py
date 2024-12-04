@@ -6,3 +6,9 @@ def landingpage(request):
     context["content"] = "landingpage.html"
 
     return render(request, 'base.html', context)
+
+def detailpage(request):
+    context = {}
+    context["content"] = "detail.html"
+
+    return render(request, 'base.html', context)
