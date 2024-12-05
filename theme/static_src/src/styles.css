@@ -1,13 +1,13 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 @font-face {
     font-family: 'body';
-    src: url('../../../static/fonts/YoutubeSans-Regular.otf') format('opentype');
+    src: url('../../../static/fonts/YouTubeSans-Regular.otf') format('opentype');
 }
 
 @font-face {
     font-family: 'body-bold';
-    src: url('../../../static/fonts/YoutubeSans-Bold.otf') format('opentype');
+    src: url('../../../static/fonts/YouTubeSans-Bold.otf') format('opentype');
 }
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
