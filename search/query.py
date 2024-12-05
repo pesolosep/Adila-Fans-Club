@@ -88,7 +88,7 @@ QUERY_VIDEO = f"""
         <{BASE}LABEL> a :video;
             v:trendingInfo ?b1;
             v:publishedWhen ?datePublished;
-            v:inLanguage ?language;
+            v:inLanguage ?languageuri;
             :hasInfoAtTime ?b2 .
 
         ?b1 v:onCountry ?countryuri;
@@ -107,6 +107,7 @@ QUERY_VIDEO = f"""
         OPTIONAL {{?b2 v:hasTags ?taguri .}}
         BIND(STRAFTER(STR(?taguri), STR(:)) as ?tag)
         BIND(STRAFTER(STR(?collectedDateuri), STR(:)) as ?collectedDate)
+        BIND(STRAFTER(STR(?languageuri), STR(:)) as ?language)
         BIND(STRAFTER(STR(?countryuri), STR(:)) as ?country)
 
     }} GROUP BY ?id ?title ?thumb ?desc ?country ?dailyRank ?viewCount ?likeCount ?commentCount ?weeklyMovement ?dailyMovement ?collectedDate ?language ?datePublished
@@ -138,7 +139,7 @@ QUERY_COUNTRY = f"""
 
     SELECT ?country WHERE {{
         SERVICE <https://query.wikidata.org/sparql> {{
-            ?country wdt:P297 LABEL;
+            ?country wdt:P297 "LABEL";
         }}
     }}
 """

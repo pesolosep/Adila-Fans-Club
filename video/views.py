@@ -22,6 +22,7 @@ def video(request, video_id):
             "commentCount": video["commentCount"]["value"],
             "title": video["title"]["value"],
             "desc": video["desc"]["value"],
+            "language": video["language"]["value"],
             "thumb": video["thumb"]["value"],
             "tags": video["tags"]["value"].split(", ") if "tags" in video else []
         }
@@ -53,5 +54,8 @@ def video(request, video_id):
     context['video'] = data_date_country[(context['date'], context['country'])]
     if context['video']['tags'][0] == '':
         context['video']['tags'] = []
+
+    video_data = exec_query(QUERY_COUNTRY.replace("LABEL", context['country']))
+    context['wikidata_country'] = video_data[0]["country"]["value"]
 
     return render(request, 'base.html', context)

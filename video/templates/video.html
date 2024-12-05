@@ -5,7 +5,7 @@
     <div class="p-6 bg-white rounded-xl border-2 flex flex-col space-y-6 mt-36 ml-12 mb-16">
       <img class="rounded-md w-full" src="{{ video.thumb }}" />
       <a class="text-5xl font-body-bold" href="https://youtube.com/watch?v={{ video_id }}">{{ video.title }}</a>
-      <p class="mb-2 text-lg font-body-bold">{{ video.datePublished }}</p>
+      <p class="mb-2 text-lg font-body-bold">{{ video.datePublished }} in <a href="{{ wikidata_country }}">{{ country }}</a></p>
       <p class="mb-2 overflow-scroll h-72">{{ video.desc|linebreaksbr }}</p>
       {% if video.tags %}
         <p class="mb-2">Tags :
@@ -14,7 +14,8 @@
             {% endfor %}
         </p>
       {% endif %}
-      <p class="border-t-2">Weekly Movement : {{ video.weeklyMovement }}</p>
+      <p class="">Language : {{ video.language }}</p>
+      <p class="">Weekly Movement : {{ video.weeklyMovement }}</p>
       <p class="">Daily Movement : {{ video.dailyMovement }}</p>
       <p class="">Daily Rank : {{ video.dailyRank }}</p>
       <p class="">View Count : {{ video.viewCount }}</p>
