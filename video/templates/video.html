@@ -1,109 +1,113 @@
-<div class="container mx-auto pt-24">
-    <div class="flex flex-wrap -mx-2">
-        <div class="w-full px-2">
-            <div class="w-[840px] h-[450px] overflow-hidden">
-                <img
-                  src="https://ristek.link/fotojames1"
-                  alt="Video Thumbnail"
-                  class="w-full h-full object-cover"
-                >
-              </div>
-            <h1 class="text-3xl font-bold mb-2 py-2">Asdos 2GB</h1> <!--{{ video.title }} -->
-            <div class="flex items-center mb-4">
-                <span class="text-gray-700 mr-4">156,987 views &bull; Nov 25, 2022</span>
-            </div>
-            <div class="border-t pt-4">
-                <div class="flex items-start mb-4">
-                    <div>
-                        <h6 class="font-bold">Channel Name</h6> <!--{{ video.channel_name }} -->
-                        <p class="text-gray-500 mb-2">1.2K subscribers</p>
-                        <p class="text-gray-700 mb-2">
-                            Deskripsi Video haha hihi huhu hoho yey yey yey yey. Aku mau coba nulis deskripsi yang panjang. Aku suka banget mata kuliah ini. Lorem ipsum coba coba aja lah ya ini mah biar panjang. FOLLOW MY IG @tsabit.coda and @lifeatpbp yeyyy huhu aku senang sekaliii
-                            yey apakah ini sudah cukup panjang? Tidak? Oke aku tambah lagi deh. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec purus nec nunc. Aku masih tidak percaya kami sukses mengajak semua atlet ini untuk ikutan video ini
-                            Terima kasih kepada Yahoo Sports yang sudah mau jadi sponsor. Ayo ikutan kesempatan untuk bertemu aku di salah satu videoku hanya dengan mendownload aplikasi Yahoo Sports dan mendaftar untuk ikutan bermain Daily Draw. Permainan dimulai pada tanggal 20 Des untuk kesempatan memenangkan $10.000 tiap harinya selama 10 hari berturut-turuthttps://yahoosports.com/mrbeast
-                            
-                            Ayo cek video kolaborasi dengan Ronaldo    • I face off with MrBeast  
-                            
-                            Ronaldo
-                               / @cristiano  
-                            
-                            Tom Brady
-                               / @tombrady  
-                            
-                            Noah Lyles
-                               / @noahlyles18  
-                            
-                            Bryce Harper
-                              / 3ryceharper  
-                            
-                            Bryson DeChambeau
-                               / @brysondechambeau  
-                            
-                            Speed
-                               / @ishowspeed  
-                            
-                            New Merch - https://mrbeast.store
-                            
-                            Check out Viewstats! - https://www.viewstats.com/
-                            
-                            SUBSCRIBE ATAU AKU AKAN MENGAMBIL HEWAN PELIHATAANMU
-                            ╔═╦╗╔╦╗╔═╦═╦╦╦╦╗╔═╗
-                            ║╚╣║║║╚╣╚╣╔╣╔╣║╚╣═╣ ╠╗║╚╝║║╠╗║╚╣║║║║║═╣
-                            ╚═╩══╩═╩═╩═╩╝╚╩═╩═╝
-                            Untuk semua pertanyaan terkait video, kamu bisa menghubungichucky@mrbeastbusiness.com
-                            
-                            Musik diserdiakan olehhttps://www.extrememusic.com
-                            
-                            ----------------------------------------------------------------
-                            follow semua sosmed di bawah sini atau aku akan menghajar kamu
-                            • Facebook -   / mrbeast6000  
-                            • Twitter -   / mrbeast  
-                            • Instagram -   / mrbeast  
-                            • Ada lowowngan loh! - https://www.mrbeastjobs.com/
-                            --------------------------------------------------------------------
-
-                            Learn how to use GitHub to create new repositories, clone repositories locally, commit changes and manage project files.
-
-This full-length tutorial is an introduction on how to use GitHub for beginners and experts.
-
-📋 Table of Contents:
-
-Introduction: 0:00
-Accessing GitHub: 00:45
-Creating a Repository 1:23
-Viewing Repository List: 2:23
-Installing GitHub Desktop: 3:22
-Cloning a Repository Locally: 3:45
-Committing New Changes: 5:02
-Viewing Commits on GitHub: 6:50
-Outro: 7:25
-
-🧩 Related Content:
-More information regarding GitHub available on AnsonAlex.com:
-https://ansonalex.com/tutorials/githu...
-
-💻 More tips and tutorials:
-http://AnsonAlex.com
-
-🔎 Request a tutorial:
-https://forms.gle/sciVnK4tHno7sCcGA
-
-☎️ To get in contact with me:
-  / ansonalexander  
-  / ansonalex  
-
-🎥 For behind the scenes and exclusive content:
-  / ansonalex.c0m  
-
-🙏 To support the channel:
-https://amzn.to/3VAJbNl
-(Support the channel by shopping as you normally would)
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
+{% load svg %}
+{% load static %}
+<div class="h-max flex justify-center items-start font-body ">
+  <div class="w-1/4 -mr-48">
+    <div class="p-6 bg-white rounded-xl border-2 flex flex-col space-y-6 mt-36 ml-12">
+      <img class="rounded-md w-full" src="{{ video.thumb }}" />
+      <a class="text-4xl font-body-bold mb-2" href="https://youtube.com/channel/{{ channel_id }}">{{ video.title }}</a>
+      <p class="mb-2">Tags : {{ video.tags }}</p>
+      <p class="mb-2">Weekly Movement : {{ video.weeklyMovement }}</p>
+      <p class="mb-2">Daily Movement : {{ video.dailyMovement }}</p>
+      <p class="mb-2">Daily Rank : {{ video.dailyRank }}</p>
+      <p class="mb-2">View Count : {{ video.viewCount }}</p>
+      <p class="mb-2">Like Count : {{ video.likeCount }}</p>
+      <p class="mb-2">Comment Count : {{ video.commentCount }}</p>
     </div>
+  </div>
+  <div class="flex flex-col h-screen w-screen space-y-16 pt-36 items-center justify-center overflow-hidden -mx-36 -mr-72">
+    <div class="flex space-x-6 ml-32">
+      {% for d in dates %}
+      {% if d == date %}
+      <form method="post" action="{% url 'video:video' video_id=video_id %}">
+        {% csrf_token %}
+        <input name="date_select" class="hidden" value="{{ d }}">
+        <button type=submit class="border-0 bg-red text-white px-4 py-2 rounded-md text-center">{{ d }}</button>
+      </form>
+      {% else %}
+      <form method="post" action="{% url 'video:video' video_id=video_id %}">
+        {% csrf_token %}
+        <input name="date_select" class="hidden" value="{{ d }}">
+        <button type=submit class="border-0 bg-dark-bg-3 text-white px-4 py-2 rounded-md text-center">{{ d }}</button>
+      </form>
+      {% endif %}
+      {% endfor %}
+    </div>
+    <div class="w-full h-full">
+      <div class="relative left-1/4">
+        <div class="absolute left-[25px]">
+          {% svg 'rest' %}
+        </div>
+        <form method="post" action="{% url 'video:video' video_id=video_id %}">
+          {% csrf_token %}
+          <input name="country_select" class="hidden" value="US">
+          <input name="date_select" class="hidden" value="{{ date }}">
+          <button type=submit class="absolute top-[172px]">
+            {% if 'US' in countries and 'US' == country %}
+            {% svg 'US' %}
+            {% elif 'US' != country and 'US' in countries%}
+            {% svg 'USUnsel' %}
+            {% else %}
+            {% svg 'USDark' %}
+            {% endif %}
+          </button>
+        </form>
+        <form method="post" action="{% url 'video:video' video_id=video_id %}">
+          {% csrf_token %}
+          <input name="country_select" class="hidden" value="ID">
+          <input name="date_select" class="hidden" value="{{ date }}">
+          <button type=submit class="absolute top-[446px] left-[742px]">
+            {% if 'ID' in countries and 'ID' == country %}
+            {% svg 'ID' %}
+            {% elif 'ID' != country and 'ID' in countries %}
+            {% svg 'IDUnsel' %}
+            {% else %}
+            {% svg 'IDDark' %}
+            {% endif %}
+          </button>
+        </form>
+        <form method="post" action="{% url 'video:video' video_id=video_id %}">
+          {% csrf_token %}
+          <input name="country_select" class="hidden" value="IN">
+          <input name="date_select" class="hidden" value="{{ date }}">
+          <button type=submit class="absolute top-[356px] left-[666px]">
+            {% if 'IN' in countries and 'IN' == country %}
+            {% svg 'IN' %}
+            {% elif 'IN' != country and 'IN' in countries %}
+            {% svg 'INUnsel' %}
+            {% else %}
+            {% svg 'INDark' %}
+            {% endif %}
+          </button>
+        </form>
+        <form method="post" action="{% url 'video:video' video_id=video_id %}">
+          {% csrf_token %}
+          <input name="country_select" class="hidden" value="MX">
+          <input name="date_select" class="hidden" value="{{ date }}">
+          <button type=submit class="absolute top-[366px] left-[142px]">
+            {% if 'MX' in countries and 'MX' == country %}
+            {% svg 'MX' %}
+            {% elif 'MX' != country and 'MX' in countries %}
+            {% svg 'MXUnsel' %}
+            {% else %}
+            {% svg 'MXDark' %}
+            {% endif %}
+          </button>
+        </form>
+        <form method="post" action="{% url 'video:video' video_id=video_id %}">
+          {% csrf_token %}
+          <input name="country_select" class="hidden" value="BR">
+          <input name="date_select" class="hidden" value="{{ date }}">
+          <button type=submit class="absolute top-[448px] left-[267px]">
+            {% if 'BR' in countries and 'BR' == country %}
+            {% svg 'BR' %}
+            {% elif 'BR' != country and 'BR' in countries %}
+            {% svg 'BRUnsel' %}
+            {% else %}
+            {% svg 'BRDark' %}
+            {% endif %}
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
 </div>
-
-<script src="https://unpkg.com/alpinejs@3.0.6" defer></script>

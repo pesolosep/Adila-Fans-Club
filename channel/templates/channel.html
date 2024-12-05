@@ -19,7 +19,11 @@
 
                 <div class="w-2/3">
                     <div class="p-6 bg-white rounded-xl border-2">
-                        <img src="/static/img/fotobgjames.jpeg" alt="James" class="w-full h-auto rounded-lg mb-4">
+                        {% if logo is not None %}
+                            <img src="{{ logo }}" alt="James" class="w-full h-auto rounded-lg mb-4">
+                        {% else %}
+                            <img src="/static/img/fotobgjames.jpeg" alt="James" class="w-full h-auto rounded-lg mb-4">
+                        {% endif %}
                         <a class="text-4xl font-body-bold mb-2" href="https://youtube.com/channel/{{ channel_id }}">{{ channel_name }}</a>
                         <p class="mb-2">Category : {{ category }}</p>
                         <p class="mb-2">Current Rank : {{ rank }}</p>

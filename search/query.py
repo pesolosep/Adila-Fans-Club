@@ -18,6 +18,7 @@ REPO = f"{HOST}repositories/{REPO_ID}"
 
 sparql = SPARQLWrapper(REPO)
 
+
 def exec_query(query: str) -> dict:
     sparql.setCredentials(settings.DB_UNAME, settings.DB_PASS)
     sparql.setQuery(query)
@@ -26,6 +27,7 @@ def exec_query(query: str) -> dict:
     results = sparql.query().convert()
 
     return results["results"]["bindings"]
+
 
 PREFIXES = f"""
     prefix :      <{BASE}>
@@ -40,34 +42,19 @@ PREFIXES = f"""
 QUERY_CHANNEL = f"""
     {PREFIXES}
 
-    SELECT ?name ?yearCreated ?subscribers ?rank ?videoViews ?videoCount ?category
-	WHERE {{
-        :LABEL a :channel;
-
-        {{
-
-            :LABEL  v:createdAt ?yearCreated;
+    SELECT ?name ?logo ?yearCreated ?subscribers ?rank ?videoViews ?videoCount ?category
+    WHERE {{
+        <{BASE}LABEL> a :channel;
+        			v:createdAt ?yearCreated;
                     v:hasSubscribers ?subscribers;
                     v:trendingRank ?rank;
                     v:videoViews ?videoViews;
                     v:videoCount ?videoCount;
-    		        v:fixedName ?name;
+                    v:fixedName ?name;
                     v:hasCategory ?categoryuri .
 
-            BIND(STRAFTER(STR(?categoryuri), STR(:)) AS ?category)
-
-        }} UNION {{
-
-            :LABEL  v:createdAt ?yearCreated;
-        	        v:hasSubscribers ?subscribers;
-                    v:videoViews ?videoViews;
-                    v:videoCount ?videoCount;
-                    v:fixedName ?name .
-
-            BIND("N/A" AS ?category)
-            BIND("N/A" AS ?rank)
-        }}
-
+        OPTIONAL {{<{BASE}LABEL> v:hasProfile ?logo .}}
+		BIND(STRAFTER(STR(?categoryuri), STR(:)) AS ?category)
     }}
 """
 
@@ -89,26 +76,57 @@ QUERY_CHANNEL_VIDEOS = f"""
 
 """
 
+QUERY_VIDEO = f"""
+    {PREFIXES}
+
+    SELECT DISTINCT ?title ?desc ?thumb (GROUP_CONCAT(DISTINCT ?tag; SEPARATOR=", ") AS ?tags) ?collectedDate ?country ?weeklyMovement ?dailyMovement ?dailyRank ?viewCount ?likeCount ?commentCount
+    WHERE {{
+        <{BASE}LABEL> a :video;
+            v:trendingInfo ?b1;
+            :hasInfoAtTime ?b2 .
+
+        ?b1 v:onCountry ?countryuri;
+            v:weeklyMovement ?weeklyMovement;
+            v:dailyMovement ?dailyMovement;
+            v:dailyRank ?dailyRank;
+            v:viewCount ?viewCount;
+            v:likeCount ?likeCount;
+            v:commentCount ?commentCount;
+            v:trendingInfoWhen ?collectedDateuri .
+
+        ?b2 v:hasTitle ?title;
+            v:hasDescription ?desc;
+            v:hasThumbnail ?thumb .
+
+        OPTIONAL {{?b2 v:hasTags ?taguri .}}
+        BIND(STRAFTER(STR(?taguri), STR(:)) as ?tag)
+        BIND(STRAFTER(STR(?collectedDateuri), STR(:)) as ?collectedDate)
+        BIND(STRAFTER(STR(?countryuri), STR(:)) as ?country)
+
+    }} GROUP BY ?id ?title ?thumb ?desc ?country ?dailyRank ?viewCount ?likeCount ?commentCount ?weeklyMovement ?dailyMovement ?collectedDate
+"""
+
 FUZZY_QUERY = f"""
     {PREFIXES}
 
     SELECT DISTINCT ?id ?label ?type
     WHERE {{
-    	{{
+        {{
             ?uri a :video;
                  :hasInfoAtTime [v:hasTitle ?label]
             BIND("video" AS ?type)
-    	}} UNION {{
-        	?uri a :channel;
-        		v:fixedName ?label .
+        }} UNION {{
+            ?uri a :channel;
+                        v:fixedName ?label .
             BIND("channel" AS ?type)
-    	}}
+        }}
 
         BIND(STRAFTER(STR(?uri), STR(:)) AS ?id)
         FILTER(STRSTARTS(LCASE(?label), LCASE("LABEL")) || CONTAINS(LCASE(?label), LCASE("LABEL")))
 
     }} LIMIT 1000
 """
+
 
 def fix_encoding(data: str) -> str:
     data = unquote(data).encode()
@@ -145,25 +163,16 @@ QUERY_CHANNEL_CATEGORY = f"""
     }}
 """
 
-QUERY_VIDEO = f"""
+QUERY_CHANNEL_NAMES = f"""
     {PREFIXES}
 
-    SELECT ?title ?thumbs ?desc (GROUP_CONCAT(DISTINCT ?tag; SEPARATOR=", ") AS ?tags) ?colledtedDate ?country ?dailyRank ?viewCount ?likeCount ?commentCount WHERE {{
-        LABEL a :video;
-        :hasInfoAtTime [
-            v:hasTitle ?title;
-            v:hasThumbnail ?thumbs;
-            v:hasDescription ?desc;
-            v:hasTags ?tag
-        ];
-        v:trendingInfo [
-            v:collectedWhen ?colledtedDate;
-            v:onCountry ?country;
-            v:dailyRank ?dailyRank;
-            v:viewCount ?viewCount;
-            v:likeCount ?likeCount;
-            v:commentCount ?commentCount
-        ] .
+    SELECT ?channelName (MIN(?changed_date) AS ?changed_date)
+    WHERE {{
+        :LABEL a :channel;
+               v:hasNames [
+                   v:channelName ?channelName;
+                   v:nameWhen ?changed_date;
+               ];
     }}
-    GROUP BY ?title ?thumbs ?desc ?colledtedDate ?country ?dailyRank ?viewCount ?likeCount ?commentCount
+    GROUP BY ?channelName
 """

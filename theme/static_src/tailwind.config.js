@@ -46,7 +46,8 @@ module.exports = {
             colors: {
             'dark-bg-1': '#181818',
             'dark-bg-2': '#212121',
-            'dark-bg-3': '#3d3d3d'
+            'dark-bg-3': '#3d3d3d',
+            'red': '#ff0000',
             },
             fontSize: {
                 '10xl': ['10rem', '10rem'],

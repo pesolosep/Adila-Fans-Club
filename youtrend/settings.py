@@ -33,7 +33,7 @@ DB_PASS = os.environ['DB_PASS']
 DEBUG =  os.environ['DEBUG'] == "True"
 
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'django']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'django', 'aldenluth.fi']
 
 # Application definition
 
@@ -151,11 +151,6 @@ STATIC_URL = '/static/'
 STATIC_ROOT = '/staticfiles/'
 STATICFILES_DIRS = [
     BASE_DIR / "static",
-]
-
-SVG_DIRS = [
-    BASE_DIR / "static/icons",
-    BASE_DIR / "static/decor"
 ]
 
 # Default primary key field type
