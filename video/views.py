@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from search.query import *
-import matplotlib.pyplot as plt, mpld3
+from datetime import datetime
+
 
 # Create your views here.
 def video(request, video_id):
@@ -15,13 +16,14 @@ def video(request, video_id):
             "weeklyMovement": video["weeklyMovement"]["value"],
             "dailyMovement": video["dailyMovement"]["value"],
             "dailyRank": video["dailyRank"]["value"],
+            "datePublished": datetime.strptime(video["datePublished"]["value"], '%Y-%m-%d %H:%M:%S%z').date(),
             "viewCount": video["viewCount"]["value"],
             "likeCount": video["likeCount"]["value"],
             "commentCount": video["commentCount"]["value"],
             "title": video["title"]["value"],
             "desc": video["desc"]["value"],
             "thumb": video["thumb"]["value"],
-            "tags": video["tags"]["value"] if "tags" in video else []
+            "tags": video["tags"]["value"].split(", ") if "tags" in video else []
         }
 
         data_date[video["collectedDate"]["value"]] = []
@@ -49,6 +51,7 @@ def video(request, video_id):
     context['video_id'] = video_id
 
     context['video'] = data_date_country[(context['date'], context['country'])]
-    print(context['video'])
+    if context['video']['tags'][0] == '':
+        context['video']['tags'] = []
 
     return render(request, 'base.html', context)

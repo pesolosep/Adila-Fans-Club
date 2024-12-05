@@ -12,6 +12,8 @@ RDFS = "http://www.w3.org/2000/01/rdf-schema#"
 NS1 = "http://xmlns.com/foaf/0.1/"
 V = "http://adilafanclub.com/base/vocab#"
 XSD = "http://www.w3.org/2001/XMLSchema#"
+WD = "http://www.wikidata.org/entity/"
+WDT = "http://www.wikidata.org/prop/direct/"
 
 REPO_ID = "PakAdilaFanClub"
 REPO = f"{HOST}repositories/{REPO_ID}"
@@ -37,6 +39,8 @@ PREFIXES = f"""
     prefix v:     <{V}>
     prefix ns1:   <{NS1}>
     prefix xsd:   <{XSD}>
+    prefix wd:    <{WD}>
+    prefix wdt:   <{WDT}>
 """
 
 QUERY_CHANNEL = f"""
@@ -79,10 +83,12 @@ QUERY_CHANNEL_VIDEOS = f"""
 QUERY_VIDEO = f"""
     {PREFIXES}
 
-    SELECT DISTINCT ?title ?desc ?thumb (GROUP_CONCAT(DISTINCT ?tag; SEPARATOR=", ") AS ?tags) ?collectedDate ?country ?weeklyMovement ?dailyMovement ?dailyRank ?viewCount ?likeCount ?commentCount
+    SELECT DISTINCT ?title ?desc ?thumb (GROUP_CONCAT(DISTINCT ?tag; SEPARATOR=", ") AS ?tags) ?collectedDate ?country ?weeklyMovement ?dailyMovement ?dailyRank ?viewCount ?likeCount ?commentCount ?language ?datePublished
     WHERE {{
         <{BASE}LABEL> a :video;
             v:trendingInfo ?b1;
+            v:publishedWhen ?datePublished;
+            v:inLanguage ?language;
             :hasInfoAtTime ?b2 .
 
         ?b1 v:onCountry ?countryuri;
@@ -103,7 +109,7 @@ QUERY_VIDEO = f"""
         BIND(STRAFTER(STR(?collectedDateuri), STR(:)) as ?collectedDate)
         BIND(STRAFTER(STR(?countryuri), STR(:)) as ?country)
 
-    }} GROUP BY ?id ?title ?thumb ?desc ?country ?dailyRank ?viewCount ?likeCount ?commentCount ?weeklyMovement ?dailyMovement ?collectedDate
+    }} GROUP BY ?id ?title ?thumb ?desc ?country ?dailyRank ?viewCount ?likeCount ?commentCount ?weeklyMovement ?dailyMovement ?collectedDate ?language ?datePublished
 """
 
 FUZZY_QUERY = f"""
@@ -127,6 +133,16 @@ FUZZY_QUERY = f"""
     }} LIMIT 1000
 """
 
+QUERY_COUNTRY = f"""
+    {PREFIXES}
+
+    SELECT ?country WHERE {{
+        SERVICE <https://query.wikidata.org/sparql> {{
+            ?country wdt:P297 LABEL;
+        }}
+    }}
+"""
+
 
 def fix_encoding(data: str) -> str:
     data = unquote(data).encode()
@@ -143,36 +159,3 @@ def fix_encoding(data: str) -> str:
     data = data.decode('utf-8')
 
     return data
-
-
-QUERY_CHANNEL_CATEGORY = f"""
-    {PREFIXES}
-
-    SELECT ?id ?yearCreated ?subscribers ?rank ?videoViews ?videoCount ?category
-    WHERE {{
-        ?id a :channel;
-            v:createdAt ?yearCreated;
-            v:hasSubscribers ?subscribers;
-            v:trendingRank ?rank;
-            v:videoViews ?videoViews;
-            v:videoCount ?videoCount;
-            v:hasCategory ?category;
-            rdfs:label LABEL .
-
-        ?category rdfs:label CATEGORY .
-    }}
-"""
-
-QUERY_CHANNEL_NAMES = f"""
-    {PREFIXES}
-
-    SELECT ?channelName (MIN(?changed_date) AS ?changed_date)
-    WHERE {{
-        :LABEL a :channel;
-               v:hasNames [
-                   v:channelName ?channelName;
-                   v:nameWhen ?changed_date;
-               ];
-    }}
-    GROUP BY ?channelName
-"""

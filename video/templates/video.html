@@ -1,21 +1,29 @@
 {% load svg %}
 {% load static %}
 <div class="h-max flex justify-center items-start font-body ">
-  <div class="w-1/4 -mr-48">
-    <div class="p-6 bg-white rounded-xl border-2 flex flex-col space-y-6 mt-36 ml-12">
+  <div class="w-3/5 h-4/5">
+    <div class="p-6 bg-white rounded-xl border-2 flex flex-col space-y-6 mt-36 ml-12 mb-16">
       <img class="rounded-md w-full" src="{{ video.thumb }}" />
-      <a class="text-4xl font-body-bold mb-2" href="https://youtube.com/channel/{{ channel_id }}">{{ video.title }}</a>
-      <p class="mb-2">Tags : {{ video.tags }}</p>
-      <p class="mb-2">Weekly Movement : {{ video.weeklyMovement }}</p>
-      <p class="mb-2">Daily Movement : {{ video.dailyMovement }}</p>
-      <p class="mb-2">Daily Rank : {{ video.dailyRank }}</p>
-      <p class="mb-2">View Count : {{ video.viewCount }}</p>
-      <p class="mb-2">Like Count : {{ video.likeCount }}</p>
-      <p class="mb-2">Comment Count : {{ video.commentCount }}</p>
+      <a class="text-5xl font-body-bold" href="https://youtube.com/watch?v={{ video_id }}">{{ video.title }}</a>
+      <p class="mb-2 text-lg font-body-bold">{{ video.datePublished }}</p>
+      <p class="mb-2 overflow-scroll h-72">{{ video.desc|linebreaksbr }}</p>
+      {% if video.tags %}
+        <p class="mb-2">Tags :
+            {% for tag in video.tags %}
+              <span class="bg-gray-200 text-gray-800 px-2 py-1 rounded-md mr-2">{{ tag }}</span>
+            {% endfor %}
+        </p>
+      {% endif %}
+      <p class="border-t-2">Weekly Movement : {{ video.weeklyMovement }}</p>
+      <p class="">Daily Movement : {{ video.dailyMovement }}</p>
+      <p class="">Daily Rank : {{ video.dailyRank }}</p>
+      <p class="">View Count : {{ video.viewCount }}</p>
+      <p class="">Like Count : {{ video.likeCount }}</p>
+      <p class="">Comment Count : {{ video.commentCount }}</p>
     </div>
   </div>
-  <div class="flex flex-col h-screen w-screen space-y-16 pt-36 items-center justify-center overflow-hidden -mx-36 -mr-72">
-    <div class="flex space-x-6 ml-32">
+  <div class="flex flex-col h-screen w-full space-y-16 pt-36 items-center justify-center overflow-hidden -ml-72">
+    <div class="flex space-x-6 ml-80">
       {% for d in dates %}
       {% if d == date %}
       <form method="post" action="{% url 'video:video' video_id=video_id %}">
