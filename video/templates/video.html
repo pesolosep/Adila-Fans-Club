@@ -8,11 +8,14 @@
       <p class="mb-2 text-lg font-body-bold">{{ video.datePublished }} in <a href="{{ wikidata_country }}">{{ country }}</a></p>
       <p class="mb-2 overflow-scroll h-72">{{ video.desc|linebreaksbr }}</p>
       {% if video.tags %}
-        <p class="mb-2">Tags :
-            {% for tag in video.tags %}
-              <span class="bg-gray-200 text-gray-800 px-2 py-1 rounded-md mr-2">{{ tag }}</span>
-            {% endfor %}
-        </p>
+        <div>
+          <p class="">Tags :</p>
+          <div class="flex flex-wrap space-y-2">
+          {% for tag in video.tags %}
+                <span class="bg-gray-200 text-gray-800 px-2 py-1 rounded-md mr-2">{{ tag }}</span>
+          {% endfor %}
+          </div>
+        </div>
       {% endif %}
       <p class="">Language : {{ video.language }}</p>
       <p class="">Weekly Movement : {{ video.weeklyMovement }}</p>

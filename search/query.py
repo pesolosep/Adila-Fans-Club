@@ -84,33 +84,34 @@ QUERY_VIDEO = f"""
     {PREFIXES}
 
     SELECT DISTINCT ?title ?desc ?thumb (GROUP_CONCAT(DISTINCT ?tag; SEPARATOR=", ") AS ?tags) ?collectedDate ?country ?weeklyMovement ?dailyMovement ?dailyRank ?viewCount ?likeCount ?commentCount ?language ?datePublished
-    WHERE {{
-        <{BASE}LABEL> a :video;
-            v:trendingInfo ?b1;
-            v:publishedWhen ?datePublished;
-            v:inLanguage ?languageuri;
-            :hasInfoAtTime ?b2 .
+        WHERE {{
+            <{BASE}LABEL> a :video;
+                v:publishedWhen ?datePublished;
+                v:trendingInfo ?b1;
+                :hasInfoAtTime ?b2 .
 
-        ?b1 v:onCountry ?countryuri;
-            v:weeklyMovement ?weeklyMovement;
-            v:dailyMovement ?dailyMovement;
-            v:dailyRank ?dailyRank;
-            v:viewCount ?viewCount;
-            v:likeCount ?likeCount;
-            v:commentCount ?commentCount;
-            v:trendingInfoWhen ?collectedDateuri .
+            ?b1 v:onCountry ?countryuri;
+                v:weeklyMovement ?weeklyMovement;
+                v:dailyMovement ?dailyMovement;
+                v:dailyRank ?dailyRank;
+                v:viewCount ?viewCount;
+                v:likeCount ?likeCount;
+                v:commentCount ?commentCount;
+                v:trendingInfoWhen ?collectedDateuri .
 
-        ?b2 v:hasTitle ?title;
-            v:hasDescription ?desc;
-            v:hasThumbnail ?thumb .
+            ?b2 v:hasTitle ?title;
+                v:hasThumbnail ?thumb .
 
-        OPTIONAL {{?b2 v:hasTags ?taguri .}}
-        BIND(STRAFTER(STR(?taguri), STR(:)) as ?tag)
-        BIND(STRAFTER(STR(?collectedDateuri), STR(:)) as ?collectedDate)
-        BIND(STRAFTER(STR(?languageuri), STR(:)) as ?language)
-        BIND(STRAFTER(STR(?countryuri), STR(:)) as ?country)
 
-    }} GROUP BY ?id ?title ?thumb ?desc ?country ?dailyRank ?viewCount ?likeCount ?commentCount ?weeklyMovement ?dailyMovement ?collectedDate ?language ?datePublished
+            OPTIONAL {{ <{BASE}LABEL> v:inLanguage ?languageuri .}}
+            OPTIONAL {{ ?b2 v:hasTags ?taguri .}}
+            OPTIONAL {{ ?b2 v:hasDescription ?desc .}}
+            BIND(STRAFTER(STR(?taguri), STR(:)) as ?tag)
+            BIND(STRAFTER(STR(?collectedDateuri), STR(:)) as ?collectedDate)
+            BIND(STRAFTER(STR(?languageuri), STR(:)) as ?language)
+            BIND(STRAFTER(STR(?countryuri), STR(:)) as ?country)
+
+        }} GROUP BY ?id ?title ?thumb ?desc ?country ?dailyRank ?viewCount ?likeCount ?commentCount ?weeklyMovement ?dailyMovement ?collectedDate ?language ?datePublished
 """
 
 FUZZY_QUERY = f"""

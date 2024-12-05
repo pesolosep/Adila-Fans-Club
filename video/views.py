@@ -8,6 +8,7 @@ def video(request, video_id):
     context = {}
 
     video_data = exec_query(QUERY_VIDEO.replace("LABEL", video_id))
+    print(video_data)
     data_date = {}
     data_date_country = {}
 
@@ -22,7 +23,7 @@ def video(request, video_id):
             "commentCount": video["commentCount"]["value"],
             "title": video["title"]["value"],
             "desc": video["desc"]["value"],
-            "language": video["language"]["value"],
+            "language": video["language"]["value"] if "language" in video else "",
             "thumb": video["thumb"]["value"],
             "tags": video["tags"]["value"].split(", ") if "tags" in video else []
         }
@@ -35,6 +36,7 @@ def video(request, video_id):
 
     context["content"] = "video.html"
     data_date = [(k, v) for k, v in data_date.items()]
+    print(data_date)
 
 
     if request.method == "POST":
