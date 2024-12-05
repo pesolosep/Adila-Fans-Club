@@ -1,11 +1,7 @@
-from SPARQLWrapper import SPARQLWrapper, JSON
 from django.http import JsonResponse
 from fuzzywuzzy import fuzz
 from django.shortcuts import render
 from .query import *
-from django.conf import settings
-
-sparql = SPARQLWrapper(REPO)
 
 def search(request):
     context = {}
@@ -16,15 +12,6 @@ def search(request):
 
     context["content"] = "search.html"
     return render(request, 'base.html', context)
-
-def exec_query(query: str) -> dict:
-    sparql.setCredentials(settings.DB_UNAME, settings.DB_PASS)
-    sparql.setQuery(query)
-
-    sparql.setReturnFormat(JSON)
-    results = sparql.query().convert()
-
-    return results["results"]["bindings"]
 
 def autocomplete(request):
     assert request.method == 'POST'
